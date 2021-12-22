@@ -1,5 +1,5 @@
+use aoc_2015::lines_for_day;
 use std::isize;
-use aoc_2015::{lines_for_day};
 
 fn main() {
     let lines = lines_for_day("day-01");
