@@ -18,7 +18,6 @@ fn main() {
 
     println!("Part One: {}", part_one);
     println!("Part Two: {}", part_two);
-    println!("{}", part_two_is_nice(&String::from("ieodomkazucvgmuy")))
 }
 
 fn part_one_is_nice(input: &String) -> bool {
@@ -50,14 +49,7 @@ fn part_two_is_nice(input: &String) -> bool {
 
     let pair_repeats = input.chars()
         .zip(input.chars().skip(1))
-        .any(|(l, r)| input.replacen(&format!("{}{}", l, r), "", 1).contains(&format!("{}{}", l, r)));
-
-    if !repeats_with_middle {
-        println!("No middle repeats: {}", input);
-    }
-    if !pair_repeats {
-        println!("No pair repeats:   {}", input);
-    }
+        .any(|(l, r)| input.replacen(&format!("{}{}", l, r), " ", 1).contains(&format!("{}{}", l, r)));
 
     repeats_with_middle && pair_repeats
 }
