@@ -14,7 +14,7 @@ fn main() {
         if as_string.starts_with("00000") && five_zeros == 0 {
             five_zeros = i;
         }
-    };
+    }
 
     println!("Part One: {}", five_zeros);
     println!("Part Two: {}", six_zeros);

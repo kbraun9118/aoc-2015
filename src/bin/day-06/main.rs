@@ -1,5 +1,5 @@
-use std::collections::{HashMap, HashSet};
 use aoc_2015::lines_for_day;
+use std::collections::{HashMap, HashSet};
 
 fn main() {
     let commands = lines_for_day("day-06")
@@ -18,9 +18,19 @@ fn part_one(commands: Vec<Command>) -> usize {
         for point in command.square.points() {
             use CommandType::*;
             match command.command_type {
-                On => { points.insert(point); },
-                Off => { points.remove(&point); },
-                Toggle => if points.contains(&point) { points.remove(&point); } else { points.insert(point); },
+                On => {
+                    points.insert(point);
+                }
+                Off => {
+                    points.remove(&point);
+                }
+                Toggle => {
+                    if points.contains(&point) {
+                        points.remove(&point);
+                    } else {
+                        points.insert(point);
+                    }
+                }
             }
         }
     }
@@ -37,16 +47,21 @@ fn part_two(commands: Vec<Command>) -> u64 {
             match command.command_type {
                 On => *points.entry(point).or_default() += 1,
                 Off => {
-                    points.entry(point)
-                        .and_modify(|brightness| if *brightness > 0 { *brightness -= 1 })
+                    points
+                        .entry(point)
+                        .and_modify(|brightness| {
+                            if *brightness > 0 {
+                                *brightness -= 1
+                            }
+                        })
                         .or_default();
-                },
+                }
                 Toggle => *points.entry(point).or_default() += 2,
             }
         }
     }
 
-    points.iter().map(|(_, v)| v).sum()
+    points.into_values().sum()
 }
 
 #[derive(Debug, Copy, Clone)]
@@ -98,7 +113,8 @@ struct Command {
 impl From<String> for Command {
     fn from(string: String) -> Self {
         if string.starts_with("turn on") {
-            let rest = string[8..].split(" through ")
+            let rest = string[8..]
+                .split(" through ")
                 .map(|s| s.split_once(',').expect("could not split"))
                 .collect::<Vec<_>>();
             Self {
@@ -106,7 +122,8 @@ impl From<String> for Command {
                 square: rest.into(),
             }
         } else if string.starts_with("turn off") {
-            let rest = string[9..].split(" through ")
+            let rest = string[9..]
+                .split(" through ")
                 .map(|s| s.split_once(',').expect("could not split"))
                 .collect::<Vec<_>>();
             Self {
@@ -114,7 +131,8 @@ impl From<String> for Command {
                 square: rest.into(),
             }
         } else {
-            let rest = string[7..].split(" through ")
+            let rest = string[7..]
+                .split(" through ")
                 .map(|s| s.split_once(',').expect("could not split"))
                 .collect::<Vec<_>>();
             Self {
