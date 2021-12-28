@@ -1,14 +1,52 @@
+use std::collections::{HashMap, HashSet};
 use aoc_2015::lines_for_day;
 
 fn main() {
-    // let commands = lines_for_day("day-06")
-    //     .into_iter()
-    //     .map(|s| Command::from(s))
-    //     .collect::<Vec<_>>();
-    //
-    // println!("{:?}", commands);
-    println!("{:?}", Square::new(0, 0, 10, 10)
-        .intersection(Square::new(10, 10, 10, 10)));
+    let commands = lines_for_day("day-06")
+        .into_iter()
+        .map(|s| Command::from(s))
+        .collect::<Vec<_>>();
+
+    println!("Part One: {:?}", part_one(commands.clone()));
+    println!("Part Two: {:?}", part_two(commands.clone()));
+}
+
+fn part_one(commands: Vec<Command>) -> usize {
+    let mut points = HashSet::new();
+
+    for command in commands {
+        for point in command.square.points() {
+            use CommandType::*;
+            match command.command_type {
+                On => { points.insert(point); },
+                Off => { points.remove(&point); },
+                Toggle => if points.contains(&point) { points.remove(&point); } else { points.insert(point); },
+            }
+        }
+    }
+
+    points.len()
+}
+
+fn part_two(commands: Vec<Command>) -> u64 {
+    let mut points: HashMap<Point, u64> = HashMap::new();
+
+    for command in commands {
+        for point in command.square.points() {
+            use CommandType::*;
+            match command.command_type {
+                On => *points.entry(point).or_default() += 1,
+                Off => {
+                    points.entry(point)
+                        .and_modify(|brightness| if *brightness > 0 { *brightness -= 1 })
+                        .or_default();
+                },
+                Toggle => *points.entry(point).or_default() += 2,
+            }
+        }
+    }
+
+    points.iter().map(|(_, v)| v).sum()
 }
 
 #[derive(Debug, Copy, Clone)]
@@ -19,32 +57,17 @@ struct Square {
     end_y: u32,
 }
 
-impl Square {
-    fn new(start_x: u32, start_y: u32, end_x: u32, end_y: u32) -> Self {
-        Square {
-            start_x,
-            start_y,
-            end_x,
-            end_y,
-        }
-    }
+type Point = (u32, u32);
 
-    fn intersection(self, other: Self) -> Option<Self> {
-        if self.end_x <= other.start_x && self.end_y <= other.start_y
-            || other.end_x <= self.start_x && other.end_y <= self.start_y {
-            None
-        } else {
-            let start_x = self.start_x.max(other.start_x);
-            let end_x = self.end_x.min(other.end_x);
-            let start_y = self.start_y.max(other.start_y);
-            let end_y = self.end_y.min(other.end_y);
-            Some(Square {
-                start_x,
-                end_x,
-                start_y,
-                end_y,
-            })
+impl Square {
+    fn points(self) -> Vec<Point> {
+        let mut vec = vec![];
+        for i in self.start_x..=self.end_x {
+            for j in self.start_y..=self.end_y {
+                vec.push((i, j));
+            }
         }
+        vec
     }
 }
 
@@ -60,10 +83,16 @@ impl From<Vec<(&str, &str)>> for Square {
 }
 
 #[derive(Debug, Copy, Clone)]
-enum Command {
-    On(Square),
-    Off(Square),
-    Toggle(Square),
+enum CommandType {
+    On,
+    Off,
+    Toggle,
+}
+
+#[derive(Debug, Copy, Clone)]
+struct Command {
+    command_type: CommandType,
+    square: Square,
 }
 
 impl From<String> for Command {
@@ -72,17 +101,26 @@ impl From<String> for Command {
             let rest = string[8..].split(" through ")
                 .map(|s| s.split_once(',').expect("could not split"))
                 .collect::<Vec<_>>();
-            Self::On(Square::from(rest))
+            Self {
+                command_type: CommandType::On,
+                square: rest.into(),
+            }
         } else if string.starts_with("turn off") {
             let rest = string[9..].split(" through ")
                 .map(|s| s.split_once(',').expect("could not split"))
                 .collect::<Vec<_>>();
-            Self::Off(Square::from(rest))
+            Self {
+                command_type: CommandType::Off,
+                square: rest.into(),
+            }
         } else {
             let rest = string[7..].split(" through ")
                 .map(|s| s.split_once(',').expect("could not split"))
                 .collect::<Vec<_>>();
-            Self::Toggle(Square::from(rest))
+            Self {
+                command_type: CommandType::Toggle,
+                square: rest.into(),
+            }
         }
     }
 }
