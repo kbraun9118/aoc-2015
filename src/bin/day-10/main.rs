@@ -1,5 +1,3 @@
-use std::time::Duration;
-
 use aoc_2015::lines_for_day;
 
 fn main() {
