@@ -1,4 +1,4 @@
-use aoc_2015::{lines_for_day, lines_for_day_test};
+use aoc_2015::lines_for_day;
 use std::collections::HashMap;
 
 type Point = (i32, i32);

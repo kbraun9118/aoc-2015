@@ -1,8 +1,7 @@
 #![feature(hash_drain_filter)]
 
-use aoc_2015::{lines_for_day, lines_for_day_test};
+use aoc_2015::lines_for_day;
 use std::collections::HashMap;
-use std::fmt::format;
 
 fn main() {
     let mut instructions = lines_for_day("day-07")

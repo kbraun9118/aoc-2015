@@ -1,7 +1,6 @@
-use std::cmp::min;
+use aoc_2015::lines_for_day;
 use std::collections::{HashMap, VecDeque};
 use std::ops::Deref;
-use aoc_2015::lines_for_day;
 
 type DistanceMap = HashMap<Location, Vec<Distance>>;
 
@@ -50,7 +49,10 @@ fn solve_iter(map: &DistanceMap, locations: &VecDeque<Location>, is_min: bool) -
     } else {
         let mut distance = if is_min { u32::MAX } else { u32::MIN };
         let current_loc = locations.back().unwrap();
-        for dist in map[current_loc].iter().filter(|d| !locations.contains(&d.location)) {
+        for dist in map[current_loc]
+            .iter()
+            .filter(|d| !locations.contains(&d.location))
+        {
             let mut map = map.clone();
             map.remove(&current_loc);
             let mut locations = locations.clone();
