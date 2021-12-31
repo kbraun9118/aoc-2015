@@ -1,8 +1,8 @@
 #![feature(hash_drain_filter)]
 
+use aoc_2015::{lines_for_day, lines_for_day_test};
 use std::collections::HashMap;
 use std::fmt::format;
-use aoc_2015::{lines_for_day, lines_for_day_test};
 
 fn main() {
     let mut instructions = lines_for_day("day-07")
@@ -10,20 +10,41 @@ fn main() {
         .map(|line| {
             let (left, right) = line.split_once(" -> ").expect("Could not split");
             (right.to_string(), Connection::from(left))
-        }).collect::<HashMap<String, Connection>>();
+        })
+        .collect::<HashMap<String, Connection>>();
 
     let part_one_answer = solve_circuits(instructions.clone());
     println!("Part One: {}", part_one_answer);
-    instructions.insert(String::from("b"), Connection::Value(format!("{}", part_one_answer)));
+    instructions.insert(
+        String::from("b"),
+        Connection::Value(format!("{}", part_one_answer)),
+    );
     println!("Part Two: {}", solve_circuits(instructions));
 }
 
 fn solve_circuits(mut instructions: HashMap<String, Connection>) -> u16 {
     let mut circuits = instructions
-        .drain_filter(|_, conn| if let Connection::Value(val) = conn {
-            if let Ok(_) = val.parse::<u16>() { true } else { false }
-        } else { false })
-        .map(|(s, conn)| (s, if let Connection::Value(val) = conn { val.parse().expect("could not parse") } else { 0 }))
+        .drain_filter(|_, conn| {
+            if let Connection::Value(val) = conn {
+                if let Ok(_) = val.parse::<u16>() {
+                    true
+                } else {
+                    false
+                }
+            } else {
+                false
+            }
+        })
+        .map(|(s, conn)| {
+            (
+                s,
+                if let Connection::Value(val) = conn {
+                    val.parse().expect("could not parse")
+                } else {
+                    0
+                },
+            )
+        })
         .collect::<HashMap<String, u16>>();
 
     while !instructions.clone().is_empty() {
@@ -57,43 +78,49 @@ impl Connection {
                 } else {
                     None
                 }
-            },
+            }
             And(left, right) => {
                 if circuits.contains_key(left) && circuits.contains_key(right) {
                     Some(circuits[left] & circuits[right])
-                } else if let (Ok(left), true) = (left.parse::<u16>(), circuits.contains_key(right)) {
+                } else if let (Ok(left), true) = (left.parse::<u16>(), circuits.contains_key(right))
+                {
                     Some(left & circuits[right])
-                } else if let (true, Ok(right)) = (circuits.contains_key(left), right.parse::<u16>()) {
+                } else if let (true, Ok(right)) =
+                    (circuits.contains_key(left), right.parse::<u16>())
+                {
                     Some(circuits[left] & right)
                 } else {
                     None
                 }
-            },
+            }
             Or(left, right) => {
                 if circuits.contains_key(left) && circuits.contains_key(right) {
                     Some(circuits[left] | circuits[right])
-                } else if let (Ok(left), true) = (left.parse::<u16>(), circuits.contains_key(right)) {
+                } else if let (Ok(left), true) = (left.parse::<u16>(), circuits.contains_key(right))
+                {
                     Some(left | circuits[right])
-                } else if let (true, Ok(right)) = (circuits.contains_key(left), right.parse::<u16>()) {
+                } else if let (true, Ok(right)) =
+                    (circuits.contains_key(left), right.parse::<u16>())
+                {
                     Some(circuits[left] | right)
                 } else {
                     None
                 }
-            },
+            }
             LShift(left, right) => {
                 if circuits.contains_key(left) {
                     Some(circuits[left] << right)
                 } else {
                     None
                 }
-            },
+            }
             RShift(left, right) => {
                 if circuits.contains_key(left) {
                     Some(circuits[left] >> right)
                 } else {
                     None
                 }
-            },
+            }
             Not(value) => {
                 if circuits.contains_key(value) {
                     Some(!circuits[value])
@@ -123,7 +150,11 @@ impl From<&str> for Connection {
             let (left, right) = string.split_once(" RSHIFT ").expect("Could not split");
             RShift(left.to_string(), right.parse().expect("Could not parse"))
         } else {
-            Value(string.parse().expect(&*format!("Could not parse: {}", string)))
+            Value(
+                string
+                    .parse()
+                    .expect(&*format!("Could not parse: {}", string)),
+            )
         }
     }
 }

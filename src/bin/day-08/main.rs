@@ -1,5 +1,5 @@
-use regex::Regex;
 use aoc_2015::lines_for_day;
+use regex::Regex;
 
 fn main() {
     let lines = lines_for_day("day-08");
@@ -16,13 +16,13 @@ fn main() {
         .map(|(left, right)| 2 + right.len() - left.len())
         .sum();
 
-
     println!("Part One: {}", part_one);
     println!("Part One: {}", part_two);
 }
 
 fn real_string(string: &String) -> String {
-    string.trim_end_matches("\"")
+    string
+        .trim_end_matches("\"")
         .trim_start_matches("\"")
         .replace(r"\\", r"\")
         .replace(r#"\""#, r#"""#)
@@ -30,7 +30,5 @@ fn real_string(string: &String) -> String {
 }
 
 fn expanded_string(string: &String) -> String {
-    string
-        .replace(r"\", r"\\")
-        .replace("\"", r#"\""#)
+    string.replace(r"\", r"\\").replace("\"", r#"\""#)
 }
