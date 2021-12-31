@@ -25,11 +25,7 @@ fn solve_circuits(mut instructions: HashMap<String, Connection>) -> u16 {
     let mut circuits = instructions
         .drain_filter(|_, conn| {
             if let Connection::Value(val) = conn {
-                if let Ok(_) = val.parse::<u16>() {
-                    true
-                } else {
-                    false
-                }
+                val.parse::<u16>().is_ok()
             } else {
                 false
             }

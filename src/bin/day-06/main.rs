@@ -4,11 +4,11 @@ use std::collections::{HashMap, HashSet};
 fn main() {
     let commands = lines_for_day("day-06")
         .into_iter()
-        .map(|s| Command::from(s))
+        .map(Command::from)
         .collect::<Vec<_>>();
 
     println!("Part One: {:?}", part_one(commands.clone()));
-    println!("Part Two: {:?}", part_two(commands.clone()));
+    println!("Part Two: {:?}", part_two(commands));
 }
 
 fn part_one(commands: Vec<Command>) -> usize {

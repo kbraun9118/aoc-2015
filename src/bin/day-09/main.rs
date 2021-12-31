@@ -54,7 +54,7 @@ fn solve_iter(map: &DistanceMap, locations: &VecDeque<Location>, is_min: bool) -
             .filter(|d| !locations.contains(&d.location))
         {
             let mut map = map.clone();
-            map.remove(&current_loc);
+            map.remove(current_loc);
             let mut locations = locations.clone();
             locations.push_back(dist.location.clone());
             distance = add_distance(is_min, distance, dist.value, &map, &locations)
@@ -71,9 +71,9 @@ fn add_distance(
     locations: &VecDeque<Location>,
 ) -> u32 {
     if is_min {
-        distance.min(dist + solve_iter(&map, &locations, is_min))
+        distance.min(dist + solve_iter(map, locations, is_min))
     } else {
-        distance.max(dist + solve_iter(&map, &locations, is_min))
+        distance.max(dist + solve_iter(map, locations, is_min))
     }
 }
 

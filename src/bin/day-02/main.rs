@@ -7,7 +7,7 @@ fn main() {
     let lines = lines
         .iter()
         .map(|l| {
-            let split = l.split("x").collect::<Vec<_>>();
+            let split = l.split('x').collect::<Vec<_>>();
             (
                 i32::from_str(split[0]).unwrap(),
                 i32::from_str(split[1]).unwrap(),
