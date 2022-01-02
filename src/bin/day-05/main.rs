@@ -4,9 +4,17 @@ use std::collections::HashMap;
 fn main() {
     let lines = lines_for_day("day-05");
 
-    let part_one = lines.iter().map(|s| part_one_is_nice(s)).filter(|p| *p).count();
+    let part_one = lines
+        .iter()
+        .map(|s| part_one_is_nice(s))
+        .filter(|p| *p)
+        .count();
 
-    let part_two = lines.iter().map(|s| part_two_is_nice(s)).filter(|p| *p).count();
+    let part_two = lines
+        .iter()
+        .map(|s| part_two_is_nice(s))
+        .filter(|p| *p)
+        .count();
 
     println!("Part One: {}", part_one);
     println!("Part Two: {}", part_two);

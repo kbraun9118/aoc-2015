@@ -4,13 +4,54 @@ use std::{
     vec,
 };
 
-use aoc_2015::{lines_for_day, lines_for_day_test};
+use aoc_2015::lines_for_day;
 
 fn main() {
-    let lines = lines_for_day_test("day-13");
-    let happiness = parse(lines);
+    let lines = lines_for_day("day-13");
+    let mut happiness = parse(lines);
     let all_arrangements = combos(happiness.keys().collect::<Vec<_>>());
-    println!("{:#?}", all_arrangements.len());
+
+    println!(
+        "Part One: {}",
+        compute_happiness(all_arrangements, &happiness)
+    );
+
+    happiness.values_mut().for_each(|m| {
+        m.insert("Me".into(), 0);
+    });
+
+    happiness.insert(
+        "Me".into(),
+        happiness.keys().map(|p| (p.clone(), 0)).collect(),
+    );
+
+    let all_arrangements = combos(happiness.keys().collect::<Vec<_>>());
+
+    println!(
+        "Part Two: {}",
+        compute_happiness(all_arrangements, &happiness)
+    );
+}
+
+fn compute_happiness(arrangments: VecDeque<VecDeque<Person>>, happiness: &HappinessMap) -> i32 {
+    arrangments
+        .iter()
+        .map(|a| {
+            a.iter()
+                .enumerate()
+                .map(|(i, p)| {
+                    if i == 0 {
+                        happiness[p][&a[a.len() - 1]] + happiness[p][&a[1]]
+                    } else if i == a.len() - 1 {
+                        happiness[p][&a[0]] + happiness[p][&a[i - 1]]
+                    } else {
+                        happiness[p][&a[i - 1]] + happiness[p][&a[i + 1]]
+                    }
+                })
+                .sum()
+        })
+        .max()
+        .unwrap_or(0)
 }
 
 fn combos(people: Vec<&Person>) -> VecDeque<VecDeque<Person>> {
@@ -32,7 +73,7 @@ fn combos(people: Vec<&Person>) -> VecDeque<VecDeque<Person>> {
 
             without_person
                 .into_iter()
-                .for_each(|v| vecs.push_front(v.clone()));
+                .for_each(|v| vecs.push_front(v));
         }
         vecs
     }
@@ -46,15 +87,15 @@ fn parse(lines: Vec<String>) -> HappinessMap {
         let (num, rest) = if rest.starts_with("gain") {
             let (num, rest) = rest
                 .trim_start_matches("gain ")
-                .split_once(" ")
+                .split_once(' ')
                 .expect("could not split");
             (num.parse::<i32>().expect("could not parse"), rest)
         } else {
             let (num, rest) = rest
                 .trim_start_matches("lose ")
-                .split_once(" ")
+                .split_once(' ')
                 .expect("could not split");
-            (-1 * num.parse::<i32>().expect("could not parse"), rest)
+            (-num.parse::<i32>().expect("could not parse"), rest)
         };
 
         let other = rest
