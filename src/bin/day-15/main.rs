@@ -1,6 +1,6 @@
 use std::vec;
 
-use aoc_2015::{lines_for_day, lines_for_day_test};
+use aoc_2015::lines_for_day;
 
 fn main() {
     let ingredients = lines_for_day("day-15")
