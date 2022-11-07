@@ -7,3 +7,4 @@ edition = "2021"
 [dependencies]
 md5 = "0.7.0"
 regex = { version = "1.5.4", features = ["pattern"] }
+rayon = "1.5.3"

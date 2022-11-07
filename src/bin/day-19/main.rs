@@ -7,18 +7,31 @@ use regex::Regex;
 fn main() {
     let lines = lines_for_day("day-19");
     let (replacements, molecule) = lines.split_at(lines.len() - 2);
+    let molecule = molecule[1].as_str().to_string();
+    
 
-    let replacements = replacements
+    let mut replacements = replacements
         .into_iter()
         .map(Replacement::from)
         .collect::<Vec<_>>();
-    let regex = Regex::new(r"[A-Z][a-z]*").unwrap();
+
+    replacements.sort_by_key(|r| r.value.len());
+    replacements.reverse();
+
+    let expanded = part_1(&replacements, molecule.clone());
+
+    println!("Part 1: {}", expanded.len());
+    println!("Part 2: {}", part_2(&replacements, molecule));
+}
+
+fn part_1(replacements: &Vec<Replacement>, molecule: String) -> HashSet<String> {
+    let regex = Regex::new(r"[A-Z|e][a-d|f-z]*").unwrap();
     let molecules = regex
-        .captures_iter(molecule[1].as_str())
+        .captures_iter(&molecule)
         .map(|c| c.get(0).unwrap().as_str().to_string())
         .collect::<Vec<_>>();
 
-    let expanded = molecules
+    molecules
         .iter()
         .enumerate()
         .flat_map(|(i, m)| {
@@ -30,9 +43,32 @@ fn main() {
             }
             items
         })
-        .collect::<HashSet<_>>();
+        .collect::<HashSet<_>>()
+}
 
-    println!("{:?}", expanded.len());
+fn part_2_conversion(replacements: &Vec<Replacement>, molecule: String) -> String {
+    replacements
+        .into_iter()
+        .filter_map(|r| {
+            if molecule.contains(&r.value) {
+                Some(molecule.replacen(&r.value, &r.key, 1))
+            } else {
+                None
+            }
+        })
+        .nth(0)
+        .expect("no string")
+}
+
+fn part_2(replacements: &Vec<Replacement>, molecule: String) -> u32 {
+    let mut i = 0;
+    let mut molecule = molecule.clone();
+    while &molecule != "e" {
+        molecule = part_2_conversion(replacements, molecule);
+        i += 1;
+        dbg!((i, &molecule));
+    }
+    i
 }
 
 #[derive(Debug)]
