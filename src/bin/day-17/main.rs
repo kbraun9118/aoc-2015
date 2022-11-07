@@ -35,7 +35,7 @@ fn sum_to(
     rest: &[Container],
     sum: i32,
     set: &mut HashSet<Vec<Container>>,
-    path: Vec<Container>,
+    mut path: Vec<Container>,
 ) -> i32 {
     match (rest, sum) {
         (_, 0) => {
@@ -43,9 +43,8 @@ fn sum_to(
             1
         }
         ([rest], sum) if rest.capacity == sum => {
-            let mut path_with = path.clone();
-            path_with.push(*rest);
-            set.insert(path_with);
+            path.push(*rest);
+            set.insert(path);
             1
         }
         (_, i32::MIN..0) | ([], _) | ([_], _) => 0,
@@ -57,12 +56,12 @@ fn sum_to(
                     sum_to(&rest[i + 1..], sum - rest[i].capacity, set, path_with)
                 })
                 .sum::<i32>()
-                + sum_to(&rest[1..], sum, set, path.clone())
+                + sum_to(&rest[1..], sum, set, path)
         }
     }
 }
 
-#[derive(Debug, PartialEq, Hash, Clone, Copy, Eq)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
 struct Container {
     id: usize,
     capacity: i32,
