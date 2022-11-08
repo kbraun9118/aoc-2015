@@ -1,14 +1,13 @@
 #![feature(exclusive_range_pattern)]
 use std::collections::HashSet;
 
-use aoc_2015::{lines_for_day, lines_for_day_test};
+use aoc_2015::lines_for_day;
 use regex::Regex;
 
 fn main() {
     let lines = lines_for_day("day-19");
     let (replacements, molecule) = lines.split_at(lines.len() - 2);
     let molecule = molecule[1].as_str().to_string();
-    
 
     let mut replacements = replacements
         .into_iter()
@@ -66,7 +65,6 @@ fn part_2(replacements: &Vec<Replacement>, molecule: String) -> u32 {
     while &molecule != "e" {
         molecule = part_2_conversion(replacements, molecule);
         i += 1;
-        dbg!((i, &molecule));
     }
     i
 }
